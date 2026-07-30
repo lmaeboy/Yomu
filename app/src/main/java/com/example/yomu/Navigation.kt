@@ -42,16 +42,20 @@ fun AnimatedGifIcon(
         val state = painter.state
         if (state is coil3.compose.AsyncImagePainter.State.Success) {
             val drawable = state.result.image.asDrawable(context.resources)
-            if (android.os.Build.VERSION.SDK_INT >= 28 && drawable is android.graphics.drawable.AnimatedImageDrawable) {
-                drawable.repeatCount = 0
+            
+            // Safely set repeatCount = 0 if AnimatedImageDrawable (API 28+)
+            if (android.os.Build.VERSION.SDK_INT >= 28) {
+                val animImageDrawable = drawable as? android.graphics.drawable.AnimatedImageDrawable
+                animImageDrawable?.repeatCount = 0
+            }
+
+            val animatable = drawable as? android.graphics.drawable.Animatable
+            if (animatable != null) {
                 if (trigger > 0) {
-                    drawable.start()
+                    animatable.start()
                 } else {
-                    drawable.stop()
+                    animatable.stop()
                 }
-            } else if (drawable is android.graphics.drawable.Animatable) {
-                drawable.stop()
-                if (trigger > 0) drawable.start()
             }
         }
     }
