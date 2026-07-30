@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1E1F22">
+
+    
+    <meta name="description" content="Use Weeb Central advanced search to find your favorite manga easily. Filter by tag, type, status, and more for precise results.">
+    <link rel="canonical" href="https://weebcentral.com/search">
+    
+
+    
+    <title>Advanced Search | Weeb Central</title>
+    
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Weeb Central">
+    
+    <meta property="og:title" content="Advanced Search | Weeb Central">
+    <meta property="og:description" content="Use Weeb Central advanced search to find your favorite manga easily. Filter by tag, type, status, and more for precise results.">
+    <meta property="og:url" content="https://weebcentral.com/search">
+    <meta property="og:image" content="/static/images/og_image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Weeb Central">
+    
+
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Advanced Search | Weeb Central">
+    <meta name="twitter:description" content="Use Weeb Central advanced search to find your favorite manga easily. Filter by tag, type, status, and more for precise results.">
+    <meta name="twitter:site" content="@nepweebcentral">
+    <meta name="twitter:image" content="/static/images/og_image.png">
+    
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+
+    <!-- Tailwinds 4.0.9 -->
+    <link rel="stylesheet" href="/static/css/tailwind.26.05.28.min.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+
+    
+
+    
+    <!-- Google tag (gtag.js) -->
+    <script src="https://www.googletagmanager.com/gtag/js?id=G-3Q79Y9D8ZY"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-3Q79Y9D8ZY');
+    </script>
+    
+</head>
+
+<body class="flex flex-col min-h-screen" x-data="{ simple_top_nav: $persist(false), sticky_top_nav: $persist(false) }" @need_account_verification="unverified_modal.showModal()">
+
+    <input type="hidden" id="visitor-id" name="visitor_id" value="" />
+
+    
+
+    
+
+<header class="bg-brand" x-data="{ authModal: false }">
+
+    
+    <section class="bg-brand max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-4 py-4 px-4 xl:px-0">
+    
+        <div class="flex-1">
+            <a href="/">
+                <img src="/static/images/brand.png" class="hidden md:block" alt="Weeb Central Logo" width="250" height="80">
+                <img src="/static/images/brand.png" class="block md:hidden" alt="Weeb Central Logo" width="125" height="40">
+            </a>
+        </div>
+        <div class="w-full md:w-96 relative">
+            <label class="input w-full flex items-center gap-2 relative z-10">
+                <input type="search" id="quick-search-input" name="text" placeholder="Quick Search..." autocomplete="off" hx-post="https://weebcentral.com/search/simple?location=main" hx-trigger="input changed delay:500ms" hx-target="#quick-search-result" hx-swap="outerHTML">
+                <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                </svg>
+            </label>
+            <section id="quick-search-result"></section>
+        </div>
+    </section>
+
+    <section class="bg-base-300 text-lg">
+        <nav class="max-w-7xl mx-auto flex">
+            <div class="flex-1 flex items-center">
+                <a class="hover:bg-base-100 p-4 flex items-center gap-2 opacity-50" href="/" aria-label="Visit Homepage">
+                    <svg class="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                        <path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z" />
+                    </svg>
+                    <span class="hidden md:inline">Home</span>
+                </a>
+                <a class="hover:bg-base-100 p-4 flex items-center gap-2 " href="https://weebcentral.com/search" aria-label="Visit Advanced Search">
+                    <svg class="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                    </svg>
+                    <span class="hidden md:inline">Search</span>
+                </a>
+                <a class="hover:bg-base-100 p-4 flex items-center gap-2 opacity-50" href="https://weebcentral.com/general-chat" aria-label="Visit General Chat">
+                    <svg class="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                        <path d="M284 224.8a34.1 34.1 0 1 0 34.3 34.1A34.2 34.2 0 0 0 284 224.8zm-110.5 0a34.1 34.1 0 1 0 34.3 34.1A34.2 34.2 0 0 0 173.6 224.8zm220.9 0a34.1 34.1 0 1 0 34.3 34.1A34.2 34.2 0 0 0 394.5 224.8zm153.8-55.3c-15.5-24.2-37.3-45.6-64.7-63.6-52.9-34.8-122.4-54-195.7-54a406 406 0 0 0 -72 6.4 238.5 238.5 0 0 0 -49.5-36.6C99.7-11.7 40.9 .7 11.1 11.4A14.3 14.3 0 0 0 5.6 34.8C26.5 56.5 61.2 99.3 52.7 138.3c-33.1 33.9-51.1 74.8-51.1 117.3 0 43.4 18 84.2 51.1 118.1 8.5 39-26.2 81.8-47.1 103.5a14.3 14.3 0 0 0 5.6 23.3c29.7 10.7 88.5 23.1 155.3-10.2a238.7 238.7 0 0 0 49.5-36.6A406 406 0 0 0 288 460.1c73.3 0 142.8-19.2 195.7-54 27.4-18 49.1-39.4 64.7-63.6 17.3-26.9 26.1-55.9 26.1-86.1C574.4 225.4 565.6 196.4 548.3 169.5zM285 409.9a345.7 345.7 0 0 1 -89.4-11.5l-20.1 19.4a184.4 184.4 0 0 1 -37.1 27.6 145.8 145.8 0 0 1 -52.5 14.9c1-1.8 1.9-3.6 2.8-5.4q30.3-55.7 16.3-100.1c-33-26-52.8-59.2-52.8-95.4 0-83.1 104.3-150.5 232.8-150.5s232.9 67.4 232.9 150.5C517.9 342.5 413.6 409.9 285 409.9z">
+                    </svg>
+                    <span class="hidden md:inline">General Chat</span>
+                </a>
+                <a class="hover:bg-base-100 p-4 flex items-center gap-2 opacity-50" href="https://weebcentral.com/series/random" aria-label="Visit random series">
+                    <svg class="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z" />
+                    </svg>
+                    <span class="hidden md:inline">Random</span>
+                </a>
+            </div>
+            
+            <button class="hover:bg-base-100 p-4 flex items-center gap-2 " aria-label="Login" onclick="auth_modal.showModal()">
+                <svg class="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z" />
+                </svg>
+                <span class="hidden md:inline">Login</span>
+            </button>
+            
+        </nav>
+    </section>
+
+    
+    <dialog class="modal shadow-l" id="auth_modal" x-data="{ register: false, login: true, forget_password: false }">
+        <div class="modal-box">
+            <ul class="w-full menu menu-horizontal bg-base-200  gap-2">
+                <li>
+                    <button :class="{ 'opacity-50' : !login, 'bg-[#393A3F]! text-white!' : login }" @click="register = false; login = true; forget_password = false" aria-label="Login">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z" />
+                        </svg>
+                        <span class="hidden md:inline">Login</span>
+                    </button>
+                </li>
+                <li>
+                    <button :class="{ 'opacity-50' : !register, 'bg-[#393A3F]! text-white!' : register }" @click="register = true; login = false; forget_password = false" aria-label="Register">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                            <path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm80 256l64 0c44.2 0 80 35.8 80 80c0 8.8-7.2 16-16 16L80 384c-8.8 0-16-7.2-16-16c0-44.2 35.8-80 80-80zm-32-96a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zm256-32l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                        </svg>
+                        <span class="hidden md:inline">Register</span>
+                    </button>
+                </li>
+                <li>
+                    <button :class="{ 'opacity-50' : !forget_password, 'bg-[#393A3F]! text-white!' : forget_password }" @click="register = false; login = false; forget_password = true" aria-label="Forgot Password">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <path d="M144 144c0-44.2 35.8-80 80-80c31.9 0 59.4 18.6 72.3 45.7c7.6 16 26.7 22.8 42.6 15.2s22.8-26.7 15.2-42.6C331 33.7 281.5 0 224 0C144.5 0 80 64.5 80 144l0 48-16 0c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-192c0-35.3-28.7-64-64-64l-240 0 0-48z" />
+                        </svg>
+                        <span class="hidden md:inline">Forgot Password</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="mt-4" hx-ext="response-targets">
+                <div class="flex flex-col gap-6" x-show="login">
+                    <form id="login-form" class="flex flex-col gap-6" hx-post="https://weebcentral.com/auth/login" hx-target="#login-message" hx-include="#visitor-id" hx-target-400="#login-message" hx-swap="outerHTML" hx-on:htmx:after-request="if(event.detail.xhr.status === 200) clearCacheLogInOut()">
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Email</legend>
+                            <input type="email" class="input validator w-full" id="login-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                            <div class="validator-hint hidden">Enter valid email address</div>
+                        </fieldset>
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Password</legend>
+                            <div class="input validator w-full">
+                                <input type="password" class="password-input" id="login-password" autocomplete="current-password" name="password" minlength="8" maxlength="128" placeholder="********" required />
+                                <label class="cursor-pointer">
+                                    <input class="password-toggle sr-only" type="checkbox" />
+                                    <svg class="w-4 h-4 cursor-pointer shrink-0 size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path class="icon-eye-off" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                        <path class="icon-eye-off" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                        <path class="icon-eye-off" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                        <line class="icon-eye-off" x1="2" x2="22" y1="2" y2="22"></line>
+                                        <path class="icon-eye hidden" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                        <circle class="icon-eye hidden" cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </label>
+                            </div>
+                            <div class="validator-hint hidden">Must be 8 to 128 characters</div>
+                        </fieldset>
+                    </form>
+                    <div id="login-message" class="hidden"></div>
+                    <div class="flex gap-6">
+                        <button type="button" class="flex-1 btn btn-primary" hx-post="https://weebcentral.com/auth/quick-login" hx-target="#login-message" hx-target-401="#login-message" hx-swap="outerHTML" hx-on:htmx:after-request="if(event.detail.xhr.status === 200) clearCacheLogInOut()">Quick Login</button>
+                        <button type="submit" form="login-form" class="flex-1 btn btn-primary">Login</button>
+                    </div>                        
+                </div>
+                <div class="flex flex-col gap-6" x-show="register">
+                    <form id="register-form" class="flex flex-col gap-6" hx-post="https://weebcentral.com/auth/register" hx-target="#register-message" hx-include="#visitor-id" hx-target-400="#register-message" hx-swap="outerHTML" hx-on:htmx:after-request="if(event.detail.xhr.status === 200) clearCacheLogInOut()">
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Email</legend>
+                            <input type="email" class="input validator w-full" id="register-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                            <div class="validator-hint hidden">Enter valid email address</div>
+                        </fieldset>
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Username</legend>
+                            <input type="input" class="input validator w-full" id="register-username" name="username" pattern="[A-Za-z][A-Za-z0-9_\-]*" minlength="3" maxlength="25" placeholder="Username" title="Only letters, numbers, dash, and underscore" required>
+                            <div class="validator-hint hidden">
+                                Must be 3 to 25 characters
+                                <br />containing only letters, numbers, dash, and underscore
+                            </div>
+                        </fieldset>
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Password</legend>
+                            <div class="input validator w-full">
+                                <input type="password" class="password-input" id="register-password" autocomplete="current-password" name="password" minlength="8" maxlength="128" placeholder="********" required />
+                                <label class="cursor-pointer">
+                                    <input class="password-toggle sr-only" type="checkbox" />
+                                    <svg class="w-4 h-4 cursor-pointer shrink-0 size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path class="icon-eye-off" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                        <path class="icon-eye-off" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                        <path class="icon-eye-off" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                        <line class="icon-eye-off" x1="2" x2="22" y1="2" y2="22"></line>
+                                        <path class="icon-eye hidden" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                        <circle class="icon-eye hidden" cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </label>
+                            </div>
+                            <div class="validator-hint hidden">Must be 8 to 128 characters</div>
+                        </fieldset>
+                    </form>
+                    <div id="register-message" class="hidden"></div>
+                    <button type="submit" form="register-form" class="btn btn-primary">Register</button>
+                </div>
+                <div class="flex flex-col gap-6" x-show="forget_password">
+                    <form id="forget-password-form" class="flex flex-col gap-6" hx-post="https://weebcentral.com/auth/forgot-password" hx-target="#forget-password-message" hx-target-400="#forget-password-message" hx-swap="outerHTML">
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Email</legend>
+                            <input type="email" class="input validator w-full" id="forget-password-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                            <div class="validator-hint hidden">Enter valid email address</div>
+                        </fieldset>
+                    </form>
+                    <div id="forget-password-message" class="hidden"></div>
+                    <button type="submit" form="forget-password-form" class="btn btn-primary">Reset Password</button>
+                </div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+    
+</header>
+
+
+    
+<main class="bg-base-100 flex-1 flex flex-col items-center py-4 px-0 md:px-4" x-data="{ display_mode: $persist('Full Display'), show_filter: false, is_searched: 'True' === 'True', search_back_to_top: $persist(true) }">
+    <div class="bg-base-200 max-w-7xl w-full flex-1 p-6">
+        <section id="top"></section>
+        <h1 class="text-2xl md:text-3xl font-semibold flex items-center gap-2 mb-8">
+            <svg class="h-8 w-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+            </svg>
+            <span>Advanced Search</span>
+        </h1>
+        <section class="flex gap-2">
+            <form id="advanced-search-form" class="flex-1" hx-get="https://weebcentral.com/search/data" hx-target="#search-results" hx-include="[name='display_mode']" hx-trigger="submit, change from:[name='display_mode']">
+                <div class="join w-full">
+                    <label class="input w-full">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                        </svg>
+                        <input type="text" name="author"  hidden>
+                        <input type="search" class="w-full " name="text" value="naruto"  placeholder="Search for series...">
+                    </label>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href = window.location.pathname;" x-show="is_searched">
+                        <svg class="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                            <path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z" />
+                        </svg>
+                        <span class="hidden md:inline">Clear</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" aria-label="Filter Search" x-on:click="show_filter = !show_filter">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
+                        </svg>
+                        <span class="hidden md:inline">Filter</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary" aria-label="Search" x-on:click="show_filter = false; is_searched = true">
+                        <svg class="h-4 w-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                        </svg>
+                        <span class="hidden md:inline">Search</span>
+                    </button>
+                </div>
+            </form>
+            <button class="btn btn-secondary" onclick="preference_modal.showModal()">
+                <svg class="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+                </svg>
+            </button>
+            <dialog id="preference_modal" class="modal">
+                <div class="modal-box">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
+                        </svg>
+                        <span>Preferences</span>
+                    </h3>
+                    <div class="flex flex-col gap-4 mt-4">
+                        <fieldset class="fieldset text-base">
+                            <label class="fieldset-label">
+                                <input type="checkbox" class="toggle" x-model="search_back_to_top" />
+                                <span class="ml-2 cursor-pointer">Back to top button</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base">
+                            <legend class="fieldset-legend">Display Mode</legend>
+                            
+                            <label class="fieldset-label ps-8 mt-2">
+                                <input type="radio" class="radio" value="Full Display" x-model="display_mode">
+                                <span class="ml-2 cursor-pointer">Full Display</span>
+                            </label>
+                            
+                            <label class="fieldset-label ps-8 mt-2">
+                                <input type="radio" class="radio" value="Minimal Display" x-model="display_mode">
+                                <span class="ml-2 cursor-pointer">Minimal Display</span>
+                            </label>
+                            
+                        </fieldset>
+                    </div>
+                    <div class="modal-action">
+                        <form method="dialog" class="w-full">
+                            <button class="btn btn-secondary w-full">Close</button>
+                        </form>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+        </section>
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4" x-show="show_filter" x-transition.duration.500ms>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Sort</div>
+                    <div class="collapse-content">
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Best Match" value="Best Match" name="sort" checked />
+                                <span class="ml-2 cursor-pointer">Best Match</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Alphabet" value="Alphabet" name="sort"  />
+                                <span class="ml-2 cursor-pointer">Alphabet</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Popularity" value="Popularity" name="sort"  />
+                                <span class="ml-2 cursor-pointer">Popularity</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Subscribers" value="Subscribers" name="sort"  />
+                                <span class="ml-2 cursor-pointer">Subscribers</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Recently Added" value="Recently Added" name="sort"  />
+                                <span class="ml-2 cursor-pointer">Recently Added</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="sort-Latest Updates" value="Latest Updates" name="sort"  />
+                                <span class="ml-2 cursor-pointer">Latest Updates</span>
+                            </label>
+                        </fieldset>
+                        
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Order</div>
+                    <div class="collapse-content">
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="order-Ascending" value="Ascending" name="order"  />
+                                <span class="ml-2 cursor-pointer">Ascending</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="order-Descending" value="Descending" name="order" checked />
+                                <span class="ml-2 cursor-pointer">Descending</span>
+                            </label>
+                        </fieldset>
+                        
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Official Translation</div>
+                    <div class="collapse-content">
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="official-any" value="Any" name="official" checked>
+                                <span class="ml-2 cursor-pointer">Any</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="official-true" value="True" name="official" >
+                                <span class="ml-2 cursor-pointer">True</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="official-any" value="False" name="official" >
+                                <span class="ml-2 cursor-pointer">False</span>
+                            </label>
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Anime Adaptation</div>
+                    <div class="collapse-content">
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="anime-any" value="Any" name="anime" checked>
+                                <span class="ml-2 cursor-pointer">Any</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="anime-true" value="True" name="anime" >
+                                <span class="ml-2 cursor-pointer">True</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="anime-false" value="False" name="anime" >
+                                <span class="ml-2 cursor-pointer">False</span>
+                            </label>
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Adult Content</div>
+                    <div class="collapse-content">
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="adult-any" value="Any" name="adult" checked>
+                                <span class="ml-2 cursor-pointer">Any</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="adult-true" value="True" name="adult" >
+                                <span class="ml-2 cursor-pointer">True</span>
+                            </label>
+                        </fieldset>
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="radio" form="advanced-search-form" class="radio" id="adult-false" value="False" name="adult" >
+                                <span class="ml-2 cursor-pointer">False</span>
+                            </label>
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Series Status</div>
+                    <div class="collapse-content">
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="status-Ongoing" value="Ongoing" name="included_status" >
+                                <span class="ml-2 cursor-pointer">Ongoing</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="status-Complete" value="Complete" name="included_status" >
+                                <span class="ml-2 cursor-pointer">Complete</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="status-Hiatus" value="Hiatus" name="included_status" >
+                                <span class="ml-2 cursor-pointer">Hiatus</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="status-Canceled" value="Canceled" name="included_status" >
+                                <span class="ml-2 cursor-pointer">Canceled</span>
+                            </label>
+                        </fieldset>
+                        
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Series Type</div>
+                    <div class="collapse-content">
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="series_type-Manga" value="Manga" name="included_type" >
+                                <span class="ml-2 cursor-pointer">Manga</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="series_type-Manhwa" value="Manhwa" name="included_type" >
+                                <span class="ml-2 cursor-pointer">Manhwa</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="series_type-Manhua" value="Manhua" name="included_type" >
+                                <span class="ml-2 cursor-pointer">Manhua</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox" id="series_type-OEL" value="OEL" name="included_type" >
+                                <span class="ml-2 cursor-pointer">OEL</span>
+                            </label>
+                        </fieldset>
+                        
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="collapse collapse-arrow bg-base-100">
+                    <input type="checkbox">
+                    <div class="collapse-title text-xl font-medium">Tags</div>
+                    <div class="collapse-content">
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Action" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Action-value" value="Action" >
+                                <span class="ml-2 cursor-pointer">Action</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Adult" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Adult-value" value="Adult" >
+                                <span class="ml-2 cursor-pointer">Adult</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Adventure" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Adventure-value" value="Adventure" >
+                                <span class="ml-2 cursor-pointer">Adventure</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Comedy" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Comedy-value" value="Comedy" >
+                                <span class="ml-2 cursor-pointer">Comedy</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Doujinshi" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Doujinshi-value" value="Doujinshi" >
+                                <span class="ml-2 cursor-pointer">Doujinshi</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Drama" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Drama-value" value="Drama" >
+                                <span class="ml-2 cursor-pointer">Drama</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Ecchi" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Ecchi-value" value="Ecchi" >
+                                <span class="ml-2 cursor-pointer">Ecchi</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Fantasy" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Fantasy-value" value="Fantasy" >
+                                <span class="ml-2 cursor-pointer">Fantasy</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Gender Bender" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Gender Bender-value" value="Gender Bender" >
+                                <span class="ml-2 cursor-pointer">Gender Bender</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Harem" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Harem-value" value="Harem" >
+                                <span class="ml-2 cursor-pointer">Harem</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Hentai" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Hentai-value" value="Hentai" >
+                                <span class="ml-2 cursor-pointer">Hentai</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Historical" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Historical-value" value="Historical" >
+                                <span class="ml-2 cursor-pointer">Historical</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Horror" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Horror-value" value="Horror" >
+                                <span class="ml-2 cursor-pointer">Horror</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Isekai" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Isekai-value" value="Isekai" >
+                                <span class="ml-2 cursor-pointer">Isekai</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Josei" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Josei-value" value="Josei" >
+                                <span class="ml-2 cursor-pointer">Josei</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Lolicon" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Lolicon-value" value="Lolicon" >
+                                <span class="ml-2 cursor-pointer">Lolicon</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Martial Arts" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Martial Arts-value" value="Martial Arts" >
+                                <span class="ml-2 cursor-pointer">Martial Arts</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Mature" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Mature-value" value="Mature" >
+                                <span class="ml-2 cursor-pointer">Mature</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Mecha" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Mecha-value" value="Mecha" >
+                                <span class="ml-2 cursor-pointer">Mecha</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Mystery" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Mystery-value" value="Mystery" >
+                                <span class="ml-2 cursor-pointer">Mystery</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Psychological" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Psychological-value" value="Psychological" >
+                                <span class="ml-2 cursor-pointer">Psychological</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Romance" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Romance-value" value="Romance" >
+                                <span class="ml-2 cursor-pointer">Romance</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-School Life" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-School Life-value" value="School Life" >
+                                <span class="ml-2 cursor-pointer">School Life</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Sci-fi" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Sci-fi-value" value="Sci-fi" >
+                                <span class="ml-2 cursor-pointer">Sci-fi</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Seinen" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Seinen-value" value="Seinen" >
+                                <span class="ml-2 cursor-pointer">Seinen</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Shotacon" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Shotacon-value" value="Shotacon" >
+                                <span class="ml-2 cursor-pointer">Shotacon</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Shoujo" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Shoujo-value" value="Shoujo" >
+                                <span class="ml-2 cursor-pointer">Shoujo</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Shoujo Ai" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Shoujo Ai-value" value="Shoujo Ai" >
+                                <span class="ml-2 cursor-pointer">Shoujo Ai</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Shounen" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Shounen-value" value="Shounen" >
+                                <span class="ml-2 cursor-pointer">Shounen</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Shounen Ai" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Shounen Ai-value" value="Shounen Ai" >
+                                <span class="ml-2 cursor-pointer">Shounen Ai</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Slice of Life" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Slice of Life-value" value="Slice of Life" >
+                                <span class="ml-2 cursor-pointer">Slice of Life</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Smut" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Smut-value" value="Smut" >
+                                <span class="ml-2 cursor-pointer">Smut</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Sports" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Sports-value" value="Sports" >
+                                <span class="ml-2 cursor-pointer">Sports</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Supernatural" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Supernatural-value" value="Supernatural" >
+                                <span class="ml-2 cursor-pointer">Supernatural</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Tragedy" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Tragedy-value" value="Tragedy" >
+                                <span class="ml-2 cursor-pointer">Tragedy</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Yaoi" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Yaoi-value" value="Yaoi" >
+                                <span class="ml-2 cursor-pointer">Yaoi</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Yuri" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Yuri-value" value="Yuri" >
+                                <span class="ml-2 cursor-pointer">Yuri</span>
+                            </label>
+                        </fieldset>
+                        
+                        <fieldset class="fieldset text-base mt-2">
+                            <label class="fieldset-label" onclick="changeBoxValues(event, this)">
+                                <input type="checkbox" form="advanced-search-form" class="checkbox " id="tag-Other" value="0" >
+                                <input type="hidden" form="advanced-search-form" id="tag-Other-value" value="Other" >
+                                <span class="ml-2 cursor-pointer">Other</span>
+                            </label>
+                        </fieldset>
+                        
+                    </div>
+                </div>
+            </section>
+            
+        </section>
+        <section class="grid gap-4 mt-4" :class="display_mode === 'Full Display' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-2'" id="search-results" hx-trigger="load" hx-get="https://weebcentral.com/search/data" hx-include="#advanced-search-form, [name='display_mode']" hx-on:htmx:after-request="removeHtmx()"></section>
+        
+        <section class="w-full flex flex-col items-center justify-center mb-4 mt-8">
+            <script data-cfasync="false" async type="text/javascript" src="//nv.fascparbate.com/sJsfLr052x71zf/138576"></script>
+        </section>
+        
+        <button onclick="document.getElementById('top').scrollIntoView({ behavior: 'smooth' })" class="bg-secondary opacity-30 hover:opacity-70 fixed bottom-12 right-0 p-4 " aria-label="back to top" x-show="search_back_to_top">
+            <svg class="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z" />
+            </svg>
+        </button>
+    </div>
+</main>
+
+
+    <dialog id="unverified_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">Verification Required</h3>
+            <p class="py-4">Only verified users can comment, post, or reply.</p>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    
+<footer class="bg-base-300 footer footer-center footer-horizontal text-base-content p-10">
+    <nav class="grid grid-flow-col gap-4">
+        <a class="link link-hover" href="/">Home</a>
+        <a class="link link-hover" href="https://weebcentral.com/contact">Contact</a>
+        <a class="link link-hover" href="https://weebcentral.com/privacy">Privacy</a>
+        <a class="link link-hover" href="https://weebcentral.com/faq">FAQ</a>
+    </nav>
+    <aside>
+        <p>v26.05.28</p>
+    </aside>
+    <aside>
+        <p>Copyright © Weeb Central</p>
+    </aside>
+</footer>
+
+
+    <!-- 3rd Party Libaries -->
+    <script defer src="/static/js/library.min.js"></script>
+
+    <!-- My Script -->
+    <script defer src="/static/js/script.min.js"></script>
+
+    
+<script defer>
+
+    function removeHtmx() {
+        const element = document.getElementById("search-results");
+        const htmxAttributes = ['hx-get', 'hx-trigger', 'hx-on:htmx:after-request', 'hx-include'];
+        htmxAttributes.forEach(attr => element.removeAttribute(attr));
+    }
+
+    function changeBoxValues(event, tag_list_group) {
+        const checkbox = tag_list_group.querySelector('input[type="checkbox"]')
+        if (!checkbox) {
+            throw new Error("No checkbox found")
+        }
+
+        const parts = checkbox.id.split("tag-")
+        if (parts.length < 2 || !parts[1]) {
+            throw new Error("Checkbox ID does not follow correct format")
+        }
+        const tag = parts[1]
+
+        const checkbox_hidden = document.getElementById(`tag-${tag}-value`)
+        if (!checkbox_hidden) {
+            throw new Error(`No checkbox hidden input found for tag = ${tag}`)
+        }
+
+        switch (checkbox.value) {
+            case '0':
+                checkbox.value = '1';
+                checkbox.classList.add('checkbox-success');
+                checkbox.checked = true;                
+                checkbox_hidden.setAttribute("name", "included_tag");
+                break;
+            case '1':
+                checkbox.value = '2';
+                checkbox.classList.remove('checkbox-success');
+                checkbox.classList.add('checkbox-error');
+                checkbox.checked = true;                
+                checkbox_hidden.setAttribute("name", "excluded_tag");
+                break;
+            case '2':
+                checkbox.value = '0';
+                checkbox.classList.remove('checkbox-error');
+                checkbox.checked = false;                
+                checkbox_hidden.removeAttribute("name");
+                break;
+            default:
+                throw new Error("it is what it is");
+        }
+    }
+
+</script>
+
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a18888fab82f1995',t:'MTc4MzYxMjc1OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+</html>
