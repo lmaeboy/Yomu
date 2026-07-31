@@ -1,10 +1,15 @@
 # 📖 Yomu (夜読)
+<img width="1254" height="1254" alt="yomu logo" src="https://github.com/user-attachments/assets/d5cb5722-be46-4700-b751-fe5799091f8f" />
 
 Manga reader inspired by **Comixology Guided View**. Features a local library and browsing feature with (Buzzword) ✨***AI***✨ Image recognition to animate a similar experience as Guided view, on the fly, for any manga.
+<img width="376" height="795" alt="Screenshot 2026-07-31 221328" src="https://github.com/user-attachments/assets/7bb1074e-3d63-47a4-9832-4fbf8acd5049" />
+
 
 ## 🤔❓Usage:
 Opening any manga chapter, the panel recognition model will load the image and figure out coordinates based on Hugging Face's **YOLOv8 Manga Panel Model** and Google's **ML Kit OCR** to map what it thinks are panels and text, and based on those coordinates, will use an **XYCut spatial algorithm** to sequence reading order, according to standard right-to-left manga reading flow.
 Tapping advances through each panel for a smooth and cinematic manga reading experience!
+<img width="448" height="542" alt="Screenshot 2026-07-31 221543" src="https://github.com/user-attachments/assets/d16a7dec-8bc6-4b79-a332-59d72c300223" />
+
 
 ## 💻⚙️ The computer talk:
 - **Language**: Kotlin
