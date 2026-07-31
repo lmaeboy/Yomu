@@ -11,6 +11,10 @@ Tapping advances through each panel for a smooth and cinematic manga reading exp
 
 <img width="376" height="542" src="https://github.com/user-attachments/assets/cf6019ea-7639-442b-830d-8eb2af8aaafc" />
 
+> *Note: Guided View is very work in progress, i'd say it's about 60% reliable as it currently stands lol, still needs a lot of tweaking*
+
+> *Options are available for manual adjustment of the algorithm, tap the middle of the page to access the settings. Settings are saved for each manga individually.*
+<img width="378" height="718" alt="image" src="https://github.com/user-attachments/assets/c6822931-bd4f-4cab-a13b-0905b976d59f" />
 
 
 ## 💻⚙️ The computer talk:
