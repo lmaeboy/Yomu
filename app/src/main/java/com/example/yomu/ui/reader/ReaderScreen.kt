@@ -5,10 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
@@ -25,6 +29,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import kotlinx.coroutines.launch
+import com.example.yomu.data.database.ChapterEntity
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -34,7 +40,10 @@ fun ReaderScreen(
     onNextPage: () -> Unit,
     onBackClick: () -> Unit,
     currentPage: Int = 1,
-    totalPages: Int = 1
+    totalPages: Int = 1,
+    chapters: List<ChapterEntity> = emptyList(),
+    currentChapterIndex: Int = -1,
+    onSelectChapter: ((Int) -> Unit)? = null
 ) {
     val panels by viewModel.panels.collectAsState()
     val currentPanelIndex by viewModel.currentPanelIndex.collectAsState()
@@ -49,6 +58,7 @@ fun ReaderScreen(
 
     var showOverlay by remember { mutableStateOf(false) }
     var showSettingsOverlay by remember { mutableStateOf(false) }
+    var showChapterMenu by remember { mutableStateOf(false) }
 
     // Manual Zoom & Pan
     var scale by remember { mutableFloatStateOf(1f) }
@@ -222,6 +232,90 @@ fun ReaderScreen(
                 }
             }
 
+            // Chapter Selection Menu (translucent, see-thru, ~50% screen height)
+            if (showChapterMenu && chapters.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.5f)
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 90.dp, start = 12.dp, end = 12.dp)
+                        .background(
+                            Color.Black.copy(alpha = 0.85f),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                        )
+                        .padding(12.dp)
+                ) {
+                    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+
+                    LaunchedEffect(showChapterMenu, currentChapterIndex) {
+                        if (currentChapterIndex in chapters.indices) {
+                            listState.scrollToItem(maxOf(0, currentChapterIndex - 2))
+                        }
+                    }
+
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Select Chapter (${currentChapterIndex + 1} / ${chapters.size})",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            )
+                            IconButton(onClick = { showChapterMenu = false }) {
+                                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse Menu", tint = Color.White)
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        HorizontalDivider(color = Color.White.copy(alpha = 0.3f))
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxWidth().weight(1f)
+                        ) {
+                            itemsIndexed(chapters) { index, chapter ->
+                                val isSelected = index == currentChapterIndex
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+                                            else Color.Transparent,
+                                            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                                        )
+                                        .clickable {
+                                            onSelectChapter?.invoke(index)
+                                            showChapterMenu = false
+                                        }
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = chapter.name,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal
+                                    )
+                                    if (chapter.isRead) {
+                                        Text(
+                                            text = "Read",
+                                            color = Color.Gray,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Bottom Bar
             Box(
                 modifier = Modifier
@@ -239,8 +333,12 @@ fun ReaderScreen(
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Previous Page", tint = Color.White)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        IconButton(onClick = { viewModel.viewFullPage() }) {
-                            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "View Full Page", tint = Color.White)
+                        IconButton(onClick = { showChapterMenu = !showChapterMenu }) {
+                            Icon(
+                                imageVector = if (showChapterMenu) Icons.Default.KeyboardArrowDown else androidx.compose.material.icons.Icons.Default.KeyboardArrowUp,
+                                contentDescription = "Chapter Browser",
+                                tint = Color.White
+                            )
                         }
                         Text(
                             text = "$currentPage / $totalPages",

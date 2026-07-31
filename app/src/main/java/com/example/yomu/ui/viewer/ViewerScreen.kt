@@ -154,6 +154,15 @@ fun ViewerScreen(
                 viewModel = readerViewModel,
                 currentPage = currentChapterPageIndex + 1,
                 totalPages = pages.size,
+                chapters = chapters,
+                currentChapterIndex = currentChapterIndex,
+                onSelectChapter = { newIndex ->
+                    if (newIndex in chapters.indices && newIndex != currentChapterIndex) {
+                        startAtLastPanel = false
+                        currentChapterPageIndex = 0
+                        currentChapterIndex = newIndex
+                    }
+                },
                 onBackClick = onBackClick,
                 onPreviousPage = { startAtLast ->
                     if (currentChapterPageIndex > 0) {
