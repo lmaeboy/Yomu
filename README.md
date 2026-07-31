@@ -9,3 +9,23 @@ Tapping advances through each panel for a smooth and cinematic manga reading exp
 ## 💻⚙️ The computer talk:
 - **Language**: Kotlin
 - **Machine Learning**: ONNX Runtime Android + Google ML Kit Text Recognition
+
+## ⚖️ Legal & Content Disclaimer
+Yomu is an open-source client application built for educational and personal reading purposes. 
+- **No Content Hosting**: Yomu does **not** host, store, or distribute any manga files or copyrighted content.
+- **Public Content Scraping**: The app dynamically loads publicly accessible manga content directly from `weebcentral.com`.
+- **Intellectual Property**: All manga titles, artwork, character designs, and trademarks belong entirely to their respective content creators, authors, and publishers.
+
+## 🚀 Building from Source
+### Prerequisites
+- Android Studio (2024.2.1+)
+- JDK 17
+- Android SDK Platform 35
+### Build Steps
+```bash
+# Clone the repository
+git clone https://github.com/lmaeboy/Yomu.git
+cd Yomu
+./gradlew assembleDebug
+```
+The compiled APK will be generated at `app/build/outputs/apk/debug/yomu.apk`.
