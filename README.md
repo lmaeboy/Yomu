@@ -1,5 +1,4 @@
-# 📖 Yomu (夜読)
-<img width="1254" height="1254" alt="yomu logo" src="https://github.com/user-attachments/assets/d5cb5722-be46-4700-b751-fe5799091f8f" />
+# 📖 Yomu (夜読) 
 
 Manga reader inspired by **Comixology Guided View**. Features a local library and browsing feature with (Buzzword) ✨***AI***✨ Image recognition to animate a similar experience as Guided view, on the fly, for any manga.
 <img width="376" height="795" alt="Screenshot 2026-07-31 221328" src="https://github.com/user-attachments/assets/7bb1074e-3d63-47a4-9832-4fbf8acd5049" />
