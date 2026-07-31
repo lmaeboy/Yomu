@@ -7,7 +7,63 @@ object XYCutAlgorithm {
 
     fun sortPanels(panels: List<PanelCoordinate>): List<PanelCoordinate> {
         if (panels.isEmpty()) return emptyList()
-        return xyCut(panels)
+        val (textPanels, mainPanels) = panels.partition { it.isText }
+        if (textPanels.isEmpty()) return xyCut(mainPanels)
+        if (mainPanels.isEmpty()) return sortTextReadingOrder(textPanels)
+        
+        return interleavePanelsAndText(mainPanels, textPanels)
+    }
+
+    private fun sortTextReadingOrder(texts: List<PanelCoordinate>): List<PanelCoordinate> {
+        return texts.sortedWith(Comparator { t1, t2 ->
+            val r1 = t1.rect
+            val r2 = t2.rect
+
+            val yDiff = Math.abs(r1.top - r2.top)
+            val avgH = (r1.height() + r2.height()) / 2f
+
+            // Check if text boxes are on roughly the same horizontal row/line
+            val isSameRow = yDiff < avgH * 0.75f || (r1.top < r2.bottom && r2.top < r1.bottom)
+
+            if (isSameRow) {
+                // Right to Left: larger centerX (further right) comes first
+                r2.centerX().compareTo(r1.centerX())
+            } else {
+                // Top to Bottom: smaller top comes first
+                r1.top.compareTo(r2.top)
+            }
+        })
+    }
+
+    private fun interleavePanelsAndText(mainPanels: List<PanelCoordinate>, textPanels: List<PanelCoordinate>): List<PanelCoordinate> {
+        val sortedPanels = xyCut(mainPanels)
+        val result = mutableListOf<PanelCoordinate>()
+        val unassignedText = textPanels.toMutableList()
+
+        for (panel in sortedPanels) {
+            // Find text boxes inside or touching this panel
+            val insideText = unassignedText.filter { text ->
+                val textCenterX = text.rect.centerX()
+                val textCenterY = text.rect.centerY()
+                panel.rect.contains(textCenterX, textCenterY) || RectF.intersects(panel.rect, text.rect)
+            }
+
+            if (insideText.isNotEmpty()) {
+                val sortedInsideText = sortTextReadingOrder(insideText)
+                // Put text boxes FIRST before the panel frame
+                result.addAll(sortedInsideText)
+                unassignedText.removeAll(insideText)
+            }
+
+            result.add(panel)
+        }
+
+        // Add remaining standalone text boxes in top-to-bottom RTL order
+        if (unassignedText.isNotEmpty()) {
+            result.addAll(sortTextReadingOrder(unassignedText))
+        }
+
+        return result
     }
 
     private fun xyCut(panels: List<PanelCoordinate>): List<PanelCoordinate> {
@@ -27,7 +83,7 @@ object XYCutAlgorithm {
         } else if (hCut.gap > 0 && vCut.gap > 0) {
             true // Prioritize horizontal if both have clean gaps
         } else {
-            // Neither has a clean gap, pick the one with the *least negative* overlap (i.e. highest value since gap is negative)
+            // Neither has a clean gap, pick the one with the *least negative* overlap
             hCut.gap >= vCut.gap
         }
 
@@ -59,8 +115,6 @@ object XYCutAlgorithm {
     private data class CutResult(val index: Int, val gap: Float, val sortedPanels: List<PanelCoordinate>)
 
     private fun findBestCut(panels: List<PanelCoordinate>, isHorizontal: Boolean): CutResult {
-        // For horizontal cuts, sort by top coordinate ascending.
-        // For vertical cuts, sort by right coordinate descending (since we read Right-to-Left).
         val sorted = if (isHorizontal) {
             panels.sortedBy { it.rect.top }
         } else {
@@ -76,7 +130,6 @@ object XYCutAlgorithm {
                 val currentMinTop = sorted.subList(i, sorted.size).minOf { it.rect.top }
                 currentMinTop - previousMaxBottom
             } else {
-                // Since we read RTL, first part is Right, second part is Left.
                 val previousMinLeft = sorted.subList(0, i).minOf { it.rect.left }
                 val currentMaxRight = sorted.subList(i, sorted.size).maxOf { it.rect.right }
                 previousMinLeft - currentMaxRight

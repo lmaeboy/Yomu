@@ -19,6 +19,9 @@ import com.example.yomu.data.source.WeebcentralSource
 import com.example.yomu.domain.Manga
 import kotlinx.coroutines.launch
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowseScreen(
@@ -40,7 +43,7 @@ fun BrowseScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Browse") },
+                title = { Text("Browse") }
             )
         }
     ) { paddingValues ->
@@ -80,7 +83,7 @@ fun BrowseScreen(
                 }
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 120.dp),
+                    columns = GridCells.Adaptive(minSize = 100.dp),
                     contentPadding = PaddingValues(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {

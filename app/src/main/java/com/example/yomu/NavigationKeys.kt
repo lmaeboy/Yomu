@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object Library : NavKey
 @Serializable data object Browse : NavKey
+@Serializable data object Settings : NavKey
 @Serializable data class Detail(val mangaUrl: String) : NavKey
 @Serializable data class Viewer(val mangaUrl: String, val chapterUrl: String) : NavKey

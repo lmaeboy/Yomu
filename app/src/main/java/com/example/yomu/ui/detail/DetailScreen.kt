@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -75,6 +76,7 @@ fun DetailScreen(
     var lastReadChapter by remember { mutableStateOf<ChapterEntity?>(null) }
     
     var showFullCover by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(mangaUrl) {
         val localManga = withContext(Dispatchers.IO) {
@@ -148,6 +150,25 @@ fun DetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Mark as unread") },
+                            onClick = {
+                                showMenu = false
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    database.chapterDao().clearReadingProgress(mangaUrl)
+                                }
+                            }
+                        )
                     }
                 }
             )
@@ -237,8 +258,40 @@ fun DetailScreen(
 
                     // Start/Continue Button
                     if (chapters.isNotEmpty()) {
-                        val nextChapterToRead = remember(chapters) {
-                            chapters.reversed().find { !it.isRead } ?: chapters.firstOrNull()
+                        val nextChapterToRead = remember(chapters, manga) {
+                            val isRealAccount = manga?.title?.contains("Real Account", ignoreCase = true) == true
+                            if (isRealAccount) {
+                                val (accountChs, prequelChs) = chapters.partition { it.name.contains("Account", ignoreCase = true) }
+                                val allAsc = accountChs.sortedBy { it.chapterNumber } + prequelChs.sortedBy { it.chapterNumber }
+
+                                val inProgress = allAsc.filter { it.lastReadPage > 0 && !it.isRead }.maxByOrNull { it.lastReadPage }
+                                if (inProgress != null) return@remember inProgress
+
+                                val lastCompleted = allAsc.filter { it.isRead }.lastOrNull()
+                                if (lastCompleted != null) {
+                                    val idx = allAsc.indexOf(lastCompleted)
+                                    if (idx != -1 && idx + 1 < allAsc.size) {
+                                        return@remember allAsc[idx + 1]
+                                    }
+                                    return@remember lastCompleted
+                                }
+
+                                // Default for Real Account: Account 1
+                                accountChs.sortedBy { it.chapterNumber }.firstOrNull() ?: chapters.firstOrNull()
+                            } else {
+                                val chaptersAsc = chapters.sortedBy { it.chapterNumber }
+                                val inProgress = chaptersAsc.filter { it.lastReadPage > 0 && !it.isRead }.maxByOrNull { it.chapterNumber }
+                                if (inProgress != null) return@remember inProgress
+
+                                val lastCompleted = chaptersAsc.filter { it.isRead }.maxByOrNull { it.chapterNumber }
+                                if (lastCompleted != null) {
+                                    val nextAfterCompleted = chaptersAsc.firstOrNull { it.chapterNumber > lastCompleted.chapterNumber && !it.isRead }
+                                    if (nextAfterCompleted != null) return@remember nextAfterCompleted
+                                    return@remember lastCompleted
+                                }
+
+                                chaptersAsc.firstOrNull()
+                            }
                         }
                         
                         if (nextChapterToRead != null) {
@@ -261,30 +314,68 @@ fun DetailScreen(
                     HorizontalDivider()
                 }
 
-                items(chapters) { chapter ->
-                    val isPartiallyRead = chapter.lastReadPage > 0 && !chapter.isRead
-                    val pagesLeft = if (chapter.totalPages > 0) chapter.totalPages - chapter.lastReadPage else 0
-                    
-                    ListItem(
-                        headlineContent = { 
+                val isRealAccount = manga?.title?.contains("Real Account", ignoreCase = true) == true
+                if (isRealAccount) {
+                    val (accountChs, prequelChs) = chapters.partition { it.name.contains("Account", ignoreCase = true) }
+                    val sortedAccounts = accountChs.sortedByDescending { it.chapterNumber }
+                    val sortedPrequels = prequelChs.sortedByDescending { it.chapterNumber }
+
+                    items(sortedAccounts) { chapter ->
+                        ChapterListItem(chapter = chapter, onChapterClick = onChapterClick)
+                    }
+
+                    if (sortedPrequels.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 2.dp)
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = chapter.name,
-                                color = if (chapter.isRead) Color.Gray else Color.Unspecified
-                            ) 
-                        },
-                        supportingContent = {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = formatRelativeDate(chapter.dateUpload), style = MaterialTheme.typography.bodySmall)
-                                if (isPartiallyRead) {
-                                    Text(text = "$pagesLeft pages left", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                                }
-                            }
-                        },
-                        modifier = Modifier.clickable { onChapterClick(chapter.url) }
-                    )
-                    HorizontalDivider()
+                                text = "Prequel Chapters (1 - 10)",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+
+                        items(sortedPrequels) { chapter ->
+                            ChapterListItem(chapter = chapter, onChapterClick = onChapterClick)
+                        }
+                    }
+                } else {
+                    items(chapters) { chapter ->
+                        ChapterListItem(chapter = chapter, onChapterClick = onChapterClick)
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ChapterListItem(
+    chapter: ChapterEntity,
+    onChapterClick: (String) -> Unit
+) {
+    val isPartiallyRead = chapter.lastReadPage > 0 && !chapter.isRead
+    val pagesLeft = if (chapter.totalPages > 0) chapter.totalPages - chapter.lastReadPage else 0
+    
+    ListItem(
+        headlineContent = { 
+            Text(
+                text = chapter.name,
+                color = if (chapter.isRead) Color.Gray else Color.Unspecified
+            ) 
+        },
+        supportingContent = {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = formatRelativeDate(chapter.dateUpload), style = MaterialTheme.typography.bodySmall)
+                if (isPartiallyRead) {
+                    Text(text = "$pagesLeft pages left", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+        },
+        modifier = Modifier.clickable { onChapterClick(chapter.url) }
+    )
+    HorizontalDivider()
 }

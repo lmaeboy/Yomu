@@ -45,6 +45,7 @@ fun ReaderScreen(
     val minArea by viewModel.minAreaPercentage.collectAsState()
     val padding by viewModel.paddingPercentage.collectAsState()
     val isDebugMode by viewModel.isDebugMode.collectAsState()
+    val isTextDetectionEnabled by viewModel.isTextDetectionEnabled.collectAsState()
 
     var showOverlay by remember { mutableStateOf(false) }
     var showSettingsOverlay by remember { mutableStateOf(false) }
@@ -274,28 +275,36 @@ fun ReaderScreen(
                         Text("Confidence Threshold: ${"%.2f".format(confidence)}")
                         Slider(
                             value = confidence,
-                            onValueChange = { viewModel.applySettings(it, minArea, padding, isDebugMode) },
+                            onValueChange = { viewModel.applySettings(it, minArea, padding, isDebugMode, isTextDetectionEnabled) },
                             valueRange = 0.05f..0.95f
                         )
 
                         Text("Min Area Filter: ${"%.3f".format(minArea)}")
                         Slider(
                             value = minArea,
-                            onValueChange = { viewModel.applySettings(confidence, it, padding, isDebugMode) },
+                            onValueChange = { viewModel.applySettings(confidence, it, padding, isDebugMode, isTextDetectionEnabled) },
                             valueRange = 0.005f..0.1f
                         )
 
                         Text("Zoom Padding: ${"%.2f".format(padding)}")
                         Slider(
                             value = padding,
-                            onValueChange = { viewModel.applySettings(confidence, minArea, it, isDebugMode) },
+                            onValueChange = { viewModel.applySettings(confidence, minArea, it, isDebugMode, isTextDetectionEnabled) },
                             valueRange = -0.3f..0.5f
                         )
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(
+                                checked = isTextDetectionEnabled,
+                                onCheckedChange = { viewModel.applySettings(confidence, minArea, padding, isDebugMode, it) }
+                            )
+                            Text("Enable Text AI Detection")
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
                                 checked = isDebugMode,
-                                onCheckedChange = { viewModel.applySettings(confidence, minArea, padding, it) }
+                                onCheckedChange = { viewModel.applySettings(confidence, minArea, padding, it, isTextDetectionEnabled) }
                             )
                             Text("Debug Mode (Show Boxes)")
                         }

@@ -24,4 +24,7 @@ interface ChapterDao {
     
     @Query("SELECT * FROM chapters WHERE mangaUrl = :mangaUrl AND isRead = 1 ORDER BY chapterNumber DESC LIMIT 1")
     suspend fun getLastReadChapter(mangaUrl: String): ChapterEntity?
+
+    @Query("UPDATE chapters SET isRead = 0, lastReadPage = 0 WHERE mangaUrl = :mangaUrl")
+    suspend fun clearReadingProgress(mangaUrl: String): Int
 }

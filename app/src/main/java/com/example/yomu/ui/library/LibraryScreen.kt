@@ -20,6 +20,9 @@ import coil3.request.crossfade
 import com.example.yomu.data.database.MangaEntity
 import com.example.yomu.data.database.YomuDatabase
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryScreen(
@@ -41,7 +44,7 @@ fun LibraryScreen(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 120.dp),
+                columns = GridCells.Adaptive(minSize = 100.dp),
                 contentPadding = PaddingValues(8.dp),
                 modifier = Modifier.padding(paddingValues).fillMaxSize()
             ) {

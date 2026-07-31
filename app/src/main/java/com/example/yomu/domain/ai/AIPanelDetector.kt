@@ -114,7 +114,7 @@ class AIPanelDetector(context: Context) {
         tensor.close()
         output.close()
         
-        val nmsPanels = applyNMS(rawPanels, 0.7f)
+        val nmsPanels = applyNMS(rawPanels, 0.45f)
         XYCutAlgorithm.sortPanels(nmsPanels)
     }
     
@@ -130,7 +130,9 @@ class AIPanelDetector(context: Context) {
             val it = sorted.iterator()
             while (it.hasNext()) {
                 val box = it.next()
-                if (calculateIoU(bestBox.rect, box.rect) > iouThreshold) {
+                val iou = calculateIoU(bestBox.rect, box.rect)
+                val containment = calculateContainment(bestBox.rect, box.rect)
+                if (iou > iouThreshold || containment > 0.50f) {
                     it.remove()
                 }
             }
@@ -138,6 +140,19 @@ class AIPanelDetector(context: Context) {
         return selected
     }
     
+    private fun calculateContainment(rect1: RectF, rect2: RectF): Float {
+        val x1 = maxOf(rect1.left, rect2.left)
+        val y1 = maxOf(rect1.top, rect2.top)
+        val x2 = minOf(rect1.right, rect2.right)
+        val y2 = minOf(rect1.bottom, rect2.bottom)
+        
+        val intersectionArea = maxOf(0f, x2 - x1) * maxOf(0f, y2 - y1)
+        val area1 = (rect1.right - rect1.left) * (rect1.bottom - rect1.top)
+        val area2 = (rect2.right - rect2.left) * (rect2.bottom - rect2.top)
+        val minArea = minOf(area1, area2)
+        return if (minArea > 0) intersectionArea / minArea else 0f
+    }
+
     private fun calculateIoU(rect1: RectF, rect2: RectF): Float {
         val x1 = maxOf(rect1.left, rect2.left)
         val y1 = maxOf(rect1.top, rect2.top)

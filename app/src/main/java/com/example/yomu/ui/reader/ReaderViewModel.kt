@@ -13,8 +13,11 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.SingletonImageLoader
 import com.example.yomu.domain.ai.AIPanelDetector
+import com.example.yomu.domain.ai.AITextDetector
 import com.example.yomu.domain.model.PanelCoordinate
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,6 +26,7 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
     
     private val prefs = application.getSharedPreferences("ai_settings", Context.MODE_PRIVATE)
     private val panelDetector = AIPanelDetector(application)
+    private val textDetector = AITextDetector()
     
     private val _panels = MutableStateFlow<List<PanelCoordinate>>(emptyList())
     val panels: StateFlow<List<PanelCoordinate>> = _panels
@@ -58,6 +62,9 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
     private val _isDebugMode = MutableStateFlow(false)
     val isDebugMode: StateFlow<Boolean> = _isDebugMode
 
+    private val _isTextDetectionEnabled = MutableStateFlow(true)
+    val isTextDetectionEnabled: StateFlow<Boolean> = _isTextDetectionEnabled
+
     private var currentMangaUrl: String = ""
     private var currentSoftwareBitmap: Bitmap? = null
 
@@ -69,6 +76,7 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
             _minAreaPercentage.value = prefs.getFloat("minArea_$safeUrl", 0.025f)
             _paddingPercentage.value = prefs.getFloat("padding_$safeUrl", 0.10f)
             _isDebugMode.value = prefs.getBoolean("debugMode_$safeUrl", false)
+            _isTextDetectionEnabled.value = prefs.getBoolean("enableTextAI_$safeUrl", true)
         }
     }
 
@@ -111,13 +119,14 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
     
-    fun applySettings(confidence: Float, minArea: Float, padding: Float, debugMode: Boolean) {
+    fun applySettings(confidence: Float, minArea: Float, padding: Float, debugMode: Boolean, enableTextAI: Boolean = _isTextDetectionEnabled.value) {
         val safeUrl = currentMangaUrl.replace("/", "_")
         prefs.edit().apply {
             putFloat("confidence_$safeUrl", confidence)
             putFloat("minArea_$safeUrl", minArea)
             putFloat("padding_$safeUrl", padding)
             putBoolean("debugMode_$safeUrl", debugMode)
+            putBoolean("enableTextAI_$safeUrl", enableTextAI)
             apply()
         }
         
@@ -125,6 +134,7 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
         _minAreaPercentage.value = minArea
         _paddingPercentage.value = padding
         _isDebugMode.value = debugMode
+        _isTextDetectionEnabled.value = enableTextAI
         
         currentSoftwareBitmap?.let {
             viewModelScope.launch(Dispatchers.IO) {
@@ -136,18 +146,31 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
     }
     
     fun resetSettingsToDefault() {
-        applySettings(0.25f, 0.025f, 0.10f, false)
+        applySettings(0.25f, 0.025f, 0.10f, false, true)
     }
 
     private suspend fun processBitmapWithCurrentSettings(bitmap: Bitmap, startAtLastPanel: Boolean) {
         val conf = _confidenceThreshold.value
         val minArea = _minAreaPercentage.value
         val padding = _paddingPercentage.value
+        val enableTextAI = _isTextDetectionEnabled.value
         
-        val rawPanels = panelDetector.detectPanels(bitmap, conf)
+        val (rawPanels, rawText) = coroutineScope {
+            val panelsDeferred = async { panelDetector.detectPanels(bitmap, conf) }
+            val textDeferred = if (enableTextAI) {
+                async { textDetector.detectText(bitmap, conf) }
+            } else {
+                async { emptyList<PanelCoordinate>() }
+            }
+            Pair(panelsDeferred.await(), textDeferred.await())
+        }
         
-        // Filter by minimum area and apply padding
-        val filteredPanels = rawPanels.filter { panel ->
+        val allDetected = rawPanels + rawText
+        val sortedAll = com.example.yomu.domain.ai.XYCutAlgorithm.sortPanels(allDetected)
+        
+        // Filter panels by minimum area and apply padding to all coordinates
+        val filteredPanels = sortedAll.filter { panel ->
+            if (panel.isText) return@filter true
             val w = panel.rect.right - panel.rect.left
             val h = panel.rect.bottom - panel.rect.top
             val areaPercentage = w * h
@@ -172,7 +195,6 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
             val debugBmp = bitmap.copy(Bitmap.Config.ARGB_8888, true)
             val canvas = android.graphics.Canvas(debugBmp)
             val paint = android.graphics.Paint().apply {
-                color = android.graphics.Color.RED
                 style = android.graphics.Paint.Style.STROKE
                 strokeWidth = 5f
             }
@@ -186,8 +208,10 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
                 val top = panel.rect.top * debugBmp.height
                 val right = panel.rect.right * debugBmp.width
                 val bottom = panel.rect.bottom * debugBmp.height
+                paint.color = if (panel.isText) android.graphics.Color.BLUE else android.graphics.Color.RED
                 canvas.drawRect(left, top, right, bottom, paint)
-                canvas.drawText("$index: ${"%.2f".format(panel.confidence)}", left, top - 10, textPaint)
+                val labelText = "$index: ${if (panel.isText) "Text" else "Panel"} ${"%.2f".format(panel.confidence)}"
+                canvas.drawText(labelText, left, top - 10, textPaint)
             }
             _debugBitmap.value = debugBmp
         } else {

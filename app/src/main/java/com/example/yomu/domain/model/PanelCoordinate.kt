@@ -4,5 +4,6 @@ import android.graphics.RectF
 
 data class PanelCoordinate(
     val rect: RectF,
-    val confidence: Float
+    val confidence: Float,
+    val isText: Boolean = false
 )

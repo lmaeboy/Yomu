@@ -91,6 +91,9 @@ dependencies {
   // ONNX Runtime for AI inference
   implementation("com.microsoft.onnxruntime:onnxruntime-android:1.18.0")
 
+  // Google ML Kit Text Recognition for Native Text Detection
+  implementation("com.google.mlkit:text-recognition:16.0.1")
+
   // Networking & Scraping
   implementation(libs.jsoup)
   implementation(libs.retrofit)
