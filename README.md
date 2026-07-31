@@ -9,7 +9,8 @@ Manga reader inspired by **Comixology Guided View**. Features a local library an
 Opening any manga chapter, the panel recognition model will load the image and figure out coordinates based on Hugging Face's **YOLOv8 Manga Panel Model** and Google's **ML Kit OCR** to map what it thinks are panels and text, and based on those coordinates, will use an **XYCut spatial algorithm** to sequence reading order, according to standard right-to-left manga reading flow.
 Tapping advances through each panel for a smooth and cinematic manga reading experience!
 
-<img width="448" height="542" src="https://github.com/user-attachments/assets/d16a7dec-8bc6-4b79-a332-59d72c300223" />
+<img width="376" height="542" src="https://github.com/user-attachments/assets/cf6019ea-7639-442b-830d-8eb2af8aaafc" />
+
 
 
 ## 💻⚙️ The computer talk:
