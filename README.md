@@ -6,7 +6,7 @@ Manga reader inspired by **Comixology Guided View**. Features a local library an
 
 
 ## 🤔❓Usage:
-Opening any manga chapter, the panel recognition model will load the image and figure out coordinates based on Hugging Face's **YOLOv8 Manga Panel Model** and Google's **ML Kit OCR** to map what it thinks are panels and text, and based on those coordinates, will use an **XYCut spatial algorithm** to sequence reading order, according to standard right-to-left manga reading flow.
+Opening any manga chapter, the panel recognition model will load the image and figure out coordinates based on Ultralytics **YOLOv8 Model** with pre-trained Manga109 dataset to map what it thinks are panels, and based on those coordinates, will use an **XYCut spatial algorithm** to sequence reading order, according to standard right-to-left manga reading flow.
 Tapping advances through each panel for a smooth and cinematic manga reading experience!
 
 <img width="376" height="542" src="https://github.com/user-attachments/assets/cf6019ea-7639-442b-830d-8eb2af8aaafc" />
@@ -17,9 +17,6 @@ Tapping advances through each panel for a smooth and cinematic manga reading exp
 <img width="378" height="718" alt="image" src="https://github.com/user-attachments/assets/c6822931-bd4f-4cab-a13b-0905b976d59f" />
 
 
-## 💻⚙️ The computer talk:
-- **Language**: Kotlin
-- **Machine Learning**: ONNX Runtime Android + Google ML Kit Text Recognition
 
 ## ⚖️ Legal & Content Disclaimer
 Yomu is an open-source client application built for educational and personal reading purposes. 
